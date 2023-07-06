@@ -1,0 +1,6 @@
+type Person {
+  name: String!
+  born: Int!
+  actedInMovies: [Movie]
+  directedMovies: [Movie]
+}

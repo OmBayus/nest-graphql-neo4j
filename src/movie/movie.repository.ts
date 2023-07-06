@@ -18,7 +18,12 @@ export class movieRepository implements crudInterface<Movie> {
         ];
     }
     getOne(id: number): Movie {
-        return new Movie();
+        return {
+            id,
+            title: 'test',
+            released: 2021,
+            tagline: 'test',
+        }
     }
     create(t: Movie): Movie {
         return new Movie();

@@ -9,7 +9,8 @@
 /* eslint-disable */
 
 export interface IQuery {
-    movies(): Nullable<Movie[]> | Promise<Nullable<Movie[]>>;
+    movies(): Nullable<Nullable<Movie>[]> | Promise<Nullable<Nullable<Movie>[]>>;
+    movie(id: number): Nullable<Movie> | Promise<Nullable<Movie>>;
 }
 
 export interface Movie {
@@ -17,6 +18,15 @@ export interface Movie {
     tagline?: Nullable<string>;
     title: string;
     released: number;
+    actors?: Nullable<Person[]>;
+    director: Person;
+}
+
+export interface Person {
+    name: string;
+    born: number;
+    actedInMovies?: Nullable<Nullable<Movie>[]>;
+    directedMovies?: Nullable<Nullable<Movie>[]>;
 }
 
 type Nullable<T> = T | null;

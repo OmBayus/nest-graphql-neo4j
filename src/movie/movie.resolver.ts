@@ -7,8 +7,18 @@ export class MovieResolver {
   constructor(private readonly movieService: MovieService) {}
 
   @Query('movies')
-  async movies(@Context() context): Promise<Movie[]> {
+  async getAll(@Context() context): Promise<Movie[]> {
     console.log("hi");
     return this.movieService.getAll();
+  }
+
+  @Query('movie')
+  async getOne(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context,
+  ): Promise<Movie> {
+    console.log("id",id);
+    
+    return this.movieService.getOne(id);
   }
 }
