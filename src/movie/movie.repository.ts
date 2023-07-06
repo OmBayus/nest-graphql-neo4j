@@ -17,7 +17,9 @@ export class movieRepository implements crudInterface<Movie> {
                 director: {
                     id: 11,
                     name: 'test',
-                    born: 2021
+                    born: 2021,
+                    actedInMovies: [],
+                    directedMovies: []
                 },
                 actors: []
             }
@@ -32,7 +34,9 @@ export class movieRepository implements crudInterface<Movie> {
             director: {
                 id: 11,
                 name: 'test',
-                born: 2021
+                born: 2021,
+                actedInMovies: [],
+                directedMovies: []
             },
             actors: []
         }
