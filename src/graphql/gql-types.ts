@@ -39,22 +39,8 @@ export interface CreateWareHouseInput {
 }
 
 export interface LocationInputType {
-    label?: Nullable<Nullable<string>[]>;
+    label?: Nullable<string>;
     id?: Nullable<string>;
-}
-
-export interface Person {
-    name: string;
-    born: number;
-    actedInMovies: Movie[];
-    directedMovies: Movie[];
-}
-
-export interface Movie {
-    title: string;
-    released: number;
-    actors: Person[];
-    director: Person;
 }
 
 export interface IMutation {
@@ -65,6 +51,7 @@ export interface IQuery {
     wareHouses(): Nullable<WareHouse[]> | Promise<Nullable<WareHouse[]>>;
     wareHouse(id: number): Nullable<WareHouse> | Promise<Nullable<WareHouse>>;
     UserInventory(): Nullable<Inventory> | Promise<Nullable<Inventory>>;
+    movie(): Nullable<Nullable<Movie>[]> | Promise<Nullable<Nullable<Movie>[]>>;
 }
 
 export interface WareHouseLocation {
@@ -146,6 +133,22 @@ export interface Inventory {
     labels?: Nullable<Nullable<string>[]>;
     properties?: Nullable<InventoryProperties>;
     materials?: Nullable<Nullable<Material>[]>;
+}
+
+export interface Person {
+    name: string;
+    born: number;
+    actedInMovies: Movie[];
+    directedMovies: Movie[];
+}
+
+export interface Movie {
+    title: string;
+    released: number;
+    actors: Person[];
+    director: Person;
+    id?: Nullable<number>;
+    year?: Nullable<number>;
 }
 
 type Nullable<T> = T | null;
