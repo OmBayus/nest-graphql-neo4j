@@ -1,0 +1,6 @@
+type Movie {
+  id: Int!
+  tagline: String
+  title: String!
+  released: Int!
+}

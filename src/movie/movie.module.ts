@@ -7,6 +7,7 @@ import { driver, auth } from 'neo4j-driver';
 import { MovieService } from './movie.service';
 import { movieRepository } from './movie.repository';
 import { RepositoryEnums } from '../common/enums';
+import { MovieResolver } from './movie.resolver';
 
 export const movieProviderFactory = async () => {
   const { NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD } = process.env;
@@ -54,6 +55,7 @@ export const movieProviderFactory = async () => {
   ],
   providers: [
     MovieService,
+    MovieResolver,
     {
       provide: RepositoryEnums.MOVIE,
       useClass: movieRepository,

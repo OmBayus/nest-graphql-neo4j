@@ -8,7 +8,14 @@ export class movieRepository implements crudInterface<Movie> {
     // private readonly neo4jService: Neo4jService,
     ) {}
     getAll(): Movie[] {
-        return [];
+        return [
+            {
+                id: 1,
+                title: 'test',
+                released: 2021,
+                tagline: 'test',
+            }
+        ];
     }
     getOne(id: number): Movie {
         return new Movie();
