@@ -8,7 +8,6 @@ export class MovieResolver {
 
   @Query('movies')
   async getAll(@Context() context): Promise<Movie[]> {
-    console.log("hi");
     return this.movieService.getAll();
   }
 
@@ -17,8 +16,6 @@ export class MovieResolver {
     @Args('id', { type: () => Int }) id: number,
     @Context() context,
   ): Promise<Movie> {
-    console.log("id",id);
-    
     return this.movieService.getOne(id);
   }
 }
