@@ -14,6 +14,12 @@ export class movieRepository implements crudInterface<Movie> {
                 title: 'test',
                 released: 2021,
                 tagline: 'test',
+                director: {
+                    id: 11,
+                    name: 'test',
+                    born: 2021
+                },
+                actors: []
             }
         ];
     }
@@ -23,6 +29,12 @@ export class movieRepository implements crudInterface<Movie> {
             title: 'test',
             released: 2021,
             tagline: 'test',
+            director: {
+                id: 11,
+                name: 'test',
+                born: 2021
+            },
+            actors: []
         }
     }
     create(t: Movie): Movie {
