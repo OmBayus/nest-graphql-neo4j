@@ -4,6 +4,9 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { typeDefs } from './type-defs';
 import { driver, auth } from 'neo4j-driver';
+import { MovieService } from './movie.service';
+import { movieRepository } from './movie.repository';
+import { RepositoryEnums } from '../common/enums';
 
 export const movieProviderFactory = async () => {
   const { NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD } = process.env;
@@ -49,5 +52,13 @@ export const movieProviderFactory = async () => {
       },
     }),
   ],
+  providers: [
+    MovieService,
+    {
+      provide: RepositoryEnums.MOVIE,
+      useClass: movieRepository,
+    },
+  ],
+  exports: [MovieService],
 })
 export class MovieModule {}

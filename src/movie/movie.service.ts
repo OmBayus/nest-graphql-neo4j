@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { crudInterface } from '../common/crud.interface';
 import { Movie } from './entities/movie.entity';
+import { RepositoryEnums } from '../common/enums';
 
 @Injectable()
 export class MovieService implements crudInterface<Movie> {
