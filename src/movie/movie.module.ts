@@ -5,7 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { typeDefs } from './type-defs';
 import { driver, auth } from 'neo4j-driver';
 
-export const gqlProviderFactory = async () => {
+export const movieProviderFactory = async () => {
   const { NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD } = process.env;
 
   const neo4jDriver = driver(
@@ -50,4 +50,4 @@ export const gqlProviderFactory = async () => {
     }),
   ],
 })
-export class GqlModule {}
+export class MovieModule {}

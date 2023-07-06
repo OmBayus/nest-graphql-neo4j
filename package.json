@@ -20,11 +20,18 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@neo4j/graphql": "^3.23.0",
+    "@nestjs/apollo": "^12.0.7",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/graphql": "^12.0.7",
     "@nestjs/platform-express": "^10.0.0",
+    "apollo-server-express": "^3.12.0",
+    "neo4j-driver": "^5.10.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "ts-morph": "^19.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
