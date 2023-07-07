@@ -3,10 +3,11 @@ import { crudInterface } from 'src/common/crud.interface';
 import { Movie } from './entities/movie.entity';
 import { Neo4jService } from 'nest-neo4j';
 import { error } from 'console';
+import { CreateMovieDto } from './dto/create-movie.dto';
 
 @Injectable()
 export class movieRepository implements crudInterface<Movie> {
-  constructor(private readonly neo4jService: Neo4jService) { }
+  constructor(private readonly neo4jService: Neo4jService) {}
   async getAll(): Promise<Movie[]> {
     const res = await this.neo4jService.read(`MATCH (n:Movie) RETURN n`);
     const result = [];
@@ -48,10 +49,12 @@ export class movieRepository implements crudInterface<Movie> {
     return result;
   }
   async getOne(id: number): Promise<Movie> {
-    const res = await this.neo4jService.read(`MATCH (n:Movie) where id(n)=${id} RETURN n`);
+    const res = await this.neo4jService.read(
+      `MATCH (n:Movie) where id(n)=${id} RETURN n`,
+    );
     const result = [];
     if (!res.records.length)
-      throw new HttpException('HATA', HttpStatus.BAD_REQUEST)
+      throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
     console.log(res.records.at(0).get('n').properties.title);
     const movieProps = res.records.at(0).get('n');
 
@@ -61,8 +64,8 @@ export class movieRepository implements crudInterface<Movie> {
       released: movieProps.properties.released.toInt(),
       tagline: movieProps.properties.tagline,
       directors: [],
-      actors: []
-    }
+      actors: [],
+    };
 
     const directorsQuery = await this.neo4jService.read(
       `match (n:Movie)<-[:DIRECTED]-(m:Person) where id(n)=${id} return m`,
@@ -78,7 +81,7 @@ export class movieRepository implements crudInterface<Movie> {
       };
       if (director.born) director.born = director.born.toInt();
       return director;
-    })
+    });
     movie.actors = actorsQuery.records.map((record) => {
       let actor = {
         id: record.get('m').identity.toInt(),
@@ -86,11 +89,17 @@ export class movieRepository implements crudInterface<Movie> {
       };
       if (actor.born) actor.born = actor.born.toInt();
       return actor;
-    })
+    });
     return movie;
   }
-  create(t: Movie): Movie {
-    return new Movie();
+  async create(createMovieDto: CreateMovieDto): Promise<Movie> {
+    console.log(createMovieDto);
+
+    const res = await this.neo4jService.write(
+      `CREATE (n:Movie {title: '${createMovieDto.title}', released: ${createMovieDto.released}, tagline: '${createMovieDto.tagline}'}) RETURN n`,
+    );
+
+    return {id:res.records[0].get('n').identity.toInt(),...res.records[0].get('n').properties}
   }
   update(id: number, t: Movie): Movie {
     return new Movie();

@@ -1,0 +1,5 @@
+input CreateMovieInput {
+  title: String
+  released: Int
+  tagline: String
+}
