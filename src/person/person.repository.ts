@@ -107,14 +107,14 @@ export class personRepository implements crudInterface<Person> {
     return { id: res.records[0].get('n').identity.toInt(), ...res.records[0].get('n').properties };
   }
   async delete(id: number): Promise<Person> {
-
     const person = await this.getOne(id);
     if (!person)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
-
+    
     await this.neo4jService.write(
       `MATCH (n:Person) where id(n)=${id} DETACH DELETE n`,
     );
+
     return person;
   }
 }
