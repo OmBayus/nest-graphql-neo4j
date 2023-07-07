@@ -56,7 +56,6 @@ export class movieRepository implements crudInterface<Movie> {
     const result = [];
     if (!res.records.length)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
-    console.log(res.records.at(0).get('n').properties.title);
     const movieProps = res.records.at(0).get('n');
 
     let movie = {
@@ -94,7 +93,6 @@ export class movieRepository implements crudInterface<Movie> {
     return movie;
   }
   async create(createMovieDto: CreateMovieDto): Promise<Movie> {
-    console.log(createMovieDto);
 
     const res = await this.neo4jService.write(
       `CREATE (n:Movie {title: '${createMovieDto.title}', released: ${createMovieDto.released}, tagline: '${createMovieDto.tagline}'}) RETURN n`,
@@ -110,7 +108,15 @@ export class movieRepository implements crudInterface<Movie> {
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
     return {id:res.records[0].get('n').identity.toInt(),...res.records[0].get('n').properties};
   }
-  delete(id: number): Movie {
-    return new Movie();
+  async delete(id: number): Promise<Movie> {
+
+    const movie = await this.getOne(id);
+    if(!movie)
+      throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
+    
+    await this.neo4jService.write(
+      `MATCH (n:Movie) where id(n)=${id} DETACH DELETE n`,
+    );
+    return movie;
   }
 }

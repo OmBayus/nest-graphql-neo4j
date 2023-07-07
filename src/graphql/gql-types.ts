@@ -23,6 +23,7 @@ export interface UpdateMovieInput {
 export interface IMutation {
     createMovie(createMovieInput: CreateMovieInput): Movie | Promise<Movie>;
     updateMovie(id: number, updateMovieInput: UpdateMovieInput): Movie | Promise<Movie>;
+    deleteMovie(id: number): Movie | Promise<Movie>;
 }
 
 export interface IQuery {

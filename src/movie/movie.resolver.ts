@@ -37,4 +37,12 @@ export class MovieResolver {
   ): Promise<Movie> {    
     return this.movieService.update(id,updateMovieInput);
   }
+
+  @Mutation('deleteMovie')
+  async deleteMovie(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context,
+  ): Promise<Movie> {    
+    return this.movieService.delete(id);
+  }
 }
