@@ -93,14 +93,14 @@ export class personRepository implements crudInterface<Person> {
   async create(createPersonDto: CreatePersonDto): Promise<Person> {
 
     const res = await this.neo4jService.write(
-      `CREATE (n:Person {name: '${createPersonDto.name}', born: ${createPersonDto.born}, tagline: '${createPersonDto}'}) RETURN n`,
+      `CREATE (n:Person {name: '${createPersonDto.name}', born: ${createPersonDto.born}}) RETURN n`,
     );
 
     return { id: res.records[0].get('n').identity.toInt(), ...res.records[0].get('n').properties }
   }
-  async update(id: number, updateMovieDto: UpdatePersonDto): Promise<Person> {
+  async update(id: number, updatePersonDto: UpdatePersonDto): Promise<Person> {
     const res = await this.neo4jService.write(
-      `MATCH (n:Person) where id(n)=${id} SET n.name='${updateMovieDto.name}', n.born=${updateMovieDto.born}, n.tagline='${updateMovieDto}' RETURN n`,
+      `MATCH (n:Person) where id(n)=${id} SET n.name='${updatePersonDto.name}', n.born=${updatePersonDto.born} RETURN n`,
     );
     if (!res.records.length)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
@@ -108,13 +108,13 @@ export class personRepository implements crudInterface<Person> {
   }
   async delete(id: number): Promise<Person> {
 
-    const movie = await this.getOne(id);
-    if (!movie)
+    const person = await this.getOne(id);
+    if (!person)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
 
     await this.neo4jService.write(
       `MATCH (n:Person) where id(n)=${id} DETACH DELETE n`,
     );
-    return movie;
+    return person;
   }
 }
