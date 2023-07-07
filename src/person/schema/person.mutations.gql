@@ -1,0 +1,5 @@
+type Mutation {
+  createPerson(createPersonInput: CreatePersonInput!): Person!
+  updatePerson(id:Int! , updatePersonInput: UpdatePersonInput!): Person!
+  deletePerson(id:Int!): Person!
+}

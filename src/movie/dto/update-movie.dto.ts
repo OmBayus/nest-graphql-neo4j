@@ -1,6 +1,5 @@
 export class UpdateMovieDto {
-    title: string;
-    released: number;
-    tagline: string;
-  }
-  
+  title: string;
+  released: number;
+  tagline: string;
+}

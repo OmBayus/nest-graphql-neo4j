@@ -1,0 +1,9 @@
+input CreatePersonInput {
+  name: String
+  born: Int
+}
+
+input UpdatePersonInput {
+  name: String
+  born: Int
+}

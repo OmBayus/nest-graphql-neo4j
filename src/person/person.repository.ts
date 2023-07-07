@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { crudInterface } from 'src/common/crud.interface';
-import { Movie } from './entities/movie.entity';
+import { Person } from './entities/person.entity';
 import { Neo4jService } from 'nest-neo4j';
-import { CreateMovieDto } from './dto/create-movie.dto';
-import { UpdateMovieDto } from './dto/update-movie.dto';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
-export class movieRepository implements crudInterface<Movie> {
+export class personRepository implements crudInterface<Person> {
   constructor(private readonly neo4jService: Neo4jService) { }
-  async getAll(): Promise<Movie[]> {
-    const res = await this.neo4jService.read(`MATCH (n:Movie) RETURN n`);
+  async getAll(): Promise<Person[]> {
+    const res = await this.neo4jService.read(`MATCH (n:Person) RETURN n`);
     const result = [];
 
     for (const record of res.records) {
@@ -48,73 +48,70 @@ export class movieRepository implements crudInterface<Movie> {
 
     return result;
   }
-  async getOne(id: number): Promise<Movie> {
+  async getOne(id: number): Promise<Person> {
     const res = await this.neo4jService.read(
-      `MATCH (n:Movie) where id(n)=${id} RETURN n`,
+      `MATCH (n:Person) where id(n)=${id} RETURN n`,
     );
     const result = [];
     if (!res.records.length)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
-    const movieProps = res.records.at(0).get('n');
+    const personProps = res.records.at(0).get('n');
 
-    let movie = {
+    let person = {
       id: id,
-      title: movieProps.properties.title,
-      released: movieProps.properties.released.toInt(),
-      tagline: movieProps.properties.tagline,
-      directors: [],
-      actors: [],
+      name: personProps.properties.name,
+      born: personProps.properties.born.toInt(),
+      actedInMovies: [],
+      directedMovies: [],
     };
 
-    const directorsQuery = await this.neo4jService.read(
-      `match (n:Movie)<-[:DIRECTED]-(m:Person) where id(n)=${id} return m`,
+    const actedInQuery = await this.neo4jService.read(
+      `match (n:Person)-[:ACTED_IN]->(m:Movie) where id(n)=${id} return m`,
     );
-    const actorsQuery = await this.neo4jService.read(
-      `match (n:Movie)<-[:ACTED_IN]-(m:Person) where id(n)=${id} return m`,
+    const directedQuery = await this.neo4jService.read(
+      `match (n:Person)-[:DIRECTED]->(m:Movie) where id(n)=${id} return m`,
     );
 
-    movie.directors = directorsQuery.records.map((record) => {
-      let director = {
+    person.actedInMovies = actedInQuery.records.map((record) => {
+      let actedMovie = {
         id: record.get('m').identity.toInt(),
         ...record.get('m').properties,
       };
-      if (director.born) director.born = director.born.toInt();
-      return director;
+      return actedMovie;
     });
-    movie.actors = actorsQuery.records.map((record) => {
+    person.directedMovies = directedQuery.records.map((record) => {
       let actor = {
         id: record.get('m').identity.toInt(),
         ...record.get('m').properties,
       };
-      if (actor.born) actor.born = actor.born.toInt();
       return actor;
     });
-    return movie;
+    return person;
   }
-  async create(createMovieDto: CreateMovieDto): Promise<Movie> {
+  async create(createPersonDto: CreatePersonDto): Promise<Person> {
 
     const res = await this.neo4jService.write(
-      `CREATE (n:Movie {title: '${createMovieDto.title}', released: ${createMovieDto.released}, tagline: '${createMovieDto.tagline}'}) RETURN n`,
+      `CREATE (n:Person {name: '${createPersonDto.name}', born: ${createPersonDto.born}, tagline: '${createPersonDto}'}) RETURN n`,
     );
 
     return { id: res.records[0].get('n').identity.toInt(), ...res.records[0].get('n').properties }
   }
-  async update(id: number, updateMovieDto: UpdateMovieDto): Promise<Movie> {
+  async update(id: number, updateMovieDto: UpdatePersonDto): Promise<Person> {
     const res = await this.neo4jService.write(
-      `MATCH (n:Movie) where id(n)=${id} SET n.title='${updateMovieDto.title}', n.released=${updateMovieDto.released}, n.tagline='${updateMovieDto.tagline}' RETURN n`,
+      `MATCH (n:Person) where id(n)=${id} SET n.name='${updateMovieDto.name}', n.born=${updateMovieDto.born}, n.tagline='${updateMovieDto}' RETURN n`,
     );
     if (!res.records.length)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
     return { id: res.records[0].get('n').identity.toInt(), ...res.records[0].get('n').properties };
   }
-  async delete(id: number): Promise<Movie> {
+  async delete(id: number): Promise<Person> {
 
     const movie = await this.getOne(id);
     if (!movie)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
 
     await this.neo4jService.write(
-      `MATCH (n:Movie) where id(n)=${id} DETACH DELETE n`,
+      `MATCH (n:Person) where id(n)=${id} DETACH DELETE n`,
     );
     return movie;
   }
