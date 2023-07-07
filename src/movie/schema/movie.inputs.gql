@@ -3,3 +3,9 @@ input CreateMovieInput {
   released: Int
   tagline: String
 }
+
+input UpdateMovieInput {
+  title: String
+  released: Int
+  tagline: String
+}

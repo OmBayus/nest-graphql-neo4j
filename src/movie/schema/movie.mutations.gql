@@ -1,3 +1,4 @@
 type Mutation {
   createMovie(createMovieInput: CreateMovieInput!): Movie!
+  updateMovie(id:Int! , updateMovieInput: UpdateMovieInput!): Movie!
 }

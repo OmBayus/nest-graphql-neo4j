@@ -4,6 +4,7 @@ import { Movie } from './entities/movie.entity';
 import { Neo4jService } from 'nest-neo4j';
 import { error } from 'console';
 import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Injectable()
 export class movieRepository implements crudInterface<Movie> {
@@ -101,8 +102,13 @@ export class movieRepository implements crudInterface<Movie> {
 
     return {id:res.records[0].get('n').identity.toInt(),...res.records[0].get('n').properties}
   }
-  update(id: number, t: Movie): Movie {
-    return new Movie();
+  async update(id: number,  updateMovieDto:UpdateMovieDto): Promise<Movie> {
+    const res = await this.neo4jService.write(
+      `MATCH (n:Movie) where id(n)=${id} SET n.title='${updateMovieDto.title}', n.released=${updateMovieDto.released}, n.tagline='${updateMovieDto.tagline}' RETURN n`,
+    );
+    if(!res.records.length)
+      throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
+    return {id:res.records[0].get('n').identity.toInt(),...res.records[0].get('n').properties};
   }
   delete(id: number): Movie {
     return new Movie();

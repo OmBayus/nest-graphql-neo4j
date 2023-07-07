@@ -14,8 +14,15 @@ export interface CreateMovieInput {
     tagline?: Nullable<string>;
 }
 
+export interface UpdateMovieInput {
+    title?: Nullable<string>;
+    released?: Nullable<number>;
+    tagline?: Nullable<string>;
+}
+
 export interface IMutation {
     createMovie(createMovieInput: CreateMovieInput): Movie | Promise<Movie>;
+    updateMovie(id: number, updateMovieInput: UpdateMovieInput): Movie | Promise<Movie>;
 }
 
 export interface IQuery {
