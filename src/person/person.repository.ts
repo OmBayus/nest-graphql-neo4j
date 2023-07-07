@@ -13,39 +13,41 @@ export class personRepository implements crudInterface<Person> {
     const result = [];
 
     for (const record of res.records) {
-      const movieId = record.get('n').identity.toInt();
-      const movieProps = record.get('n').properties;
+      const personId = record.get('n').identity.toInt();
+      const personProps = record.get('n').properties;
 
-      const directorsQuery = await this.neo4jService.read(
-        `match (n:Movie)<-[:DIRECTED]-(m:Person) where id(n)=${movieId} return m`,
+      const actedInQuery = await this.neo4jService.read(
+        `match (n:Person)-[:ACTED_IN]->(m:Movie) where id(n)=${personId} return m`,
       );
-      const actorsQuery = await this.neo4jService.read(
-        `match (n:Movie)<-[:ACTED_IN]-(m:Person) where id(n)=${movieId} return m`,
+      const directedQuery = await this.neo4jService.read(
+        `match (n:Person)-[:DIRECTED]->(m:Movie) where id(n)=${personId} return m`,
       );
-
-      result.push({
-        id: movieId,
-        ...movieProps,
-        released: movieProps.released.toInt(),
-        directors: directorsQuery.records.map((record) => {
-          let director = {
+      let person = {
+        id: personId,
+        ...personProps,
+        actedInMovies: actedInQuery.records.map((record) => {
+          let actedMovie = {
             id: record.get('m').identity.toInt(),
             ...record.get('m').properties,
           };
-          if (director.born) director.born = director.born.toInt();
-          return director;
+          if (actedMovie.released) actedMovie.released = actedMovie.released.toInt();
+          return actedMovie;
         }),
-        actors: actorsQuery.records.map((record) => {
-          let actor = {
+        directedMovies: directedQuery.records.map((record) => {
+          let directedMovie = {
             id: record.get('m').identity.toInt(),
             ...record.get('m').properties,
           };
-          if (actor.born) actor.born = actor.born.toInt();
-          return actor;
+          if (directedMovie.released) directedMovie.released = directedMovie.released.toInt();
+          return directedMovie;
         }),
-      });
+      }
+      result.push(person)
     }
-
+    result.map((person) => {
+      if (person.born) person.born = person.born.toInt()
+      return person;
+    })
     return result;
   }
   async getOne(id: number): Promise<Person> {
@@ -55,12 +57,12 @@ export class personRepository implements crudInterface<Person> {
     const result = [];
     if (!res.records.length)
       throw new HttpException('HATA', HttpStatus.BAD_REQUEST);
-    const personProps = res.records.at(0).get('n');
+    const personProps = res.records.at(0).get('n').properties;
 
     let person = {
       id: id,
-      name: personProps.properties.name,
-      born: personProps.properties.born.toInt(),
+      name: personProps.name,
+      born: personProps.born.toInt(),
       actedInMovies: [],
       directedMovies: [],
     };
@@ -80,11 +82,11 @@ export class personRepository implements crudInterface<Person> {
       return actedMovie;
     });
     person.directedMovies = directedQuery.records.map((record) => {
-      let actor = {
+      let directedMovie = {
         id: record.get('m').identity.toInt(),
         ...record.get('m').properties,
       };
-      return actor;
+      return directedMovie;
     });
     return person;
   }
