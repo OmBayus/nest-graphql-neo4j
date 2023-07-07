@@ -18,13 +18,13 @@ export interface Movie {
     tagline?: Nullable<string>;
     title: string;
     released: number;
-    actors?: Nullable<Person[]>;
-    director: Person;
+    actors?: Nullable<Nullable<Person>[]>;
+    directors?: Nullable<Nullable<Person>[]>;
 }
 
 export interface Person {
     name: string;
-    born: number;
+    born?: Nullable<number>;
     actedInMovies?: Nullable<Nullable<Movie>[]>;
     directedMovies?: Nullable<Nullable<Movie>[]>;
 }

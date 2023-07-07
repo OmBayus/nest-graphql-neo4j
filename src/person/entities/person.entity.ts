@@ -4,6 +4,6 @@ export class Person {
   id: number;
   name: string;
   born: number;
-  actedInMovies: Movie[];
-  directedMovies: Movie[];
+  actedInMovies?: Movie[];
+  directedMovies?: Movie[];
 }

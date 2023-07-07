@@ -5,6 +5,6 @@ export class Movie {
   title: string;
   released: number;
   tagline: string;
-  director: Person;
-  actors: Person[];
+  directors?: Person[];
+  actors?: Person[];
 }

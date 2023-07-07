@@ -3,6 +3,6 @@ type Movie {
   tagline: String
   title: String!
   released: Int!
-  actors: [Person!]
-  director: Person!
+  actors: [Person]
+  directors: [Person  ]
 }

@@ -4,9 +4,21 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MovieModule } from './movie/movie.module';
 import { GraphqlModule } from './graphql/graphql.module';
+import { Neo4jModule } from 'nest-neo4j';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), MovieModule,GraphqlModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MovieModule,
+    GraphqlModule,
+    Neo4jModule.forRoot({
+      scheme: 'neo4j',
+      host: 'localhost',
+      port: 7687,
+      username: 'neo4j',
+      password: 'password',
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

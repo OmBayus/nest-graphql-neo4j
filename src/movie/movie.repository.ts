@@ -1,54 +1,66 @@
-import { Injectable } from "@nestjs/common";
-import { crudInterface } from "src/common/crud.interface";
-import { Movie } from "./entities/movie.entity";
+import { Injectable } from '@nestjs/common';
+import { crudInterface } from 'src/common/crud.interface';
+import { Movie } from './entities/movie.entity';
+import { Neo4jService } from 'nest-neo4j';
 
 @Injectable()
 export class movieRepository implements crudInterface<Movie> {
-  constructor(
-    // private readonly neo4jService: Neo4jService,
-    ) {}
-    getAll(): Movie[] {
-        return [
-            {
-                id: 1,
-                title: 'test',
-                released: 2021,
-                tagline: 'test',
-                director: {
-                    id: 11,
-                    name: 'test',
-                    born: 2021,
-                    actedInMovies: [],
-                    directedMovies: []
-                },
-                actors: []
-            }
-        ];
-    }
-    getOne(id: number): Movie {
-        return {
-            id,
-            title: 'test',
-            released: 2021,
-            tagline: 'test',
-            director: {
-                id: 11,
-                name: 'test',
-                born: 2021,
-                actedInMovies: [],
-                directedMovies: []
-            },
-            actors: []
-        }
-    }
-    create(t: Movie): Movie {
-        return new Movie();
-    }
-    update(id: number, t: Movie): Movie {
-        return new Movie();
-    }
-    delete(id: number): Movie {
-        return new Movie();
+  constructor(private readonly neo4jService: Neo4jService) {}
+  async getAll(): Promise<Movie[]> {
+    const res = await this.neo4jService.read(`MATCH (n:Movie) RETURN n`);
+    const result = [];
+
+    for (const record of res.records) {
+      const movieId = record.get('n').identity.toInt();
+      const movieProps = record.get('n').properties;
+
+      const directorsQuery = await this.neo4jService.read(
+        `match (n:Movie)<-[:DIRECTED]-(m:Person) where id(n)=${movieId} return m`,
+      );
+      const actorsQuery = await this.neo4jService.read(
+        `match (n:Movie)<-[:ACTED_IN]-(m:Person) where id(n)=${movieId} return m`,
+      );
+
+      result.push({
+        id: movieId,
+        ...movieProps,
+        released: movieProps.released.toInt(),
+        directors: directorsQuery.records.map((record) => {
+          let director = {
+            id: record.get('m').identity.toInt(),
+            ...record.get('m').properties,
+          };
+          if (director.born) director.born = director.born.toInt();
+          return director;
+        }),
+        actors: actorsQuery.records.map((record) => {
+            let actor = {
+                id: record.get('m').identity.toInt(),
+                ...record.get('m').properties,
+            };
+            if (actor.born) actor.born = actor.born.toInt();
+            return actor;
+        }),
+      });
     }
 
+    return result;
   }
+  async getOne(id: number): Promise<Movie> {
+    return {
+      id,
+      title: 'test',
+      released: 2021,
+      tagline: 'test',
+    };
+  }
+  create(t: Movie): Movie {
+    return new Movie();
+  }
+  update(id: number, t: Movie): Movie {
+    return new Movie();
+  }
+  delete(id: number): Movie {
+    return new Movie();
+  }
+}

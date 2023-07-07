@@ -1,6 +1,6 @@
 type Person {
   name: String!
-  born: Int!
+  born: Int
   actedInMovies: [Movie]
   directedMovies: [Movie]
 }
